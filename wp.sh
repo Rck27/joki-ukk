@@ -1,14 +1,15 @@
 #!/bin/bash
 
+read -p 'Domain: example: wp.smk.net' domain
+read -p 'Ip address, example: 192.168.1.69  : ' ip
+IFS=. read ip1 ip2 ip3 ip4 <<< "$ip"
+
 apt update; apt-get install -y toilet bind9 wget mariadb-server mariadb-client apache2 php php-common php-mysql php-gmp php-curl php-intl php-mbstring php-xmlrpc php-gd php-xml php-cli php-zip
 systemctl status mysql
 echo "wait 2s";sleep 2
 systemctl status apache2
 
 sleep 5;clear
-read -p 'Domain: example: wp.smk.net' domain
-read -p 'Ip address, example: 192.168.1.69  : ' ip
-IFS=. read ip1 ip2 ip3 ip4 <<< "$ip"
 
 cat <<EOT>> /etc/resolv.conf
 
@@ -27,7 +28,7 @@ EXIT";
 
 cd /tmp
 wget https://wordpress.org/latest.tar.gz
-tar -xfzf latest.tar.gz; mv wordpress /var/www/html/
+tar -xvzf latest.tar.gz; mv wordpress /var/www/html/
 chown www-data:www-data /var/www/html/wordpress
 chmod 755 /var/www/html/wordpress
 
@@ -55,12 +56,12 @@ cat <<EOT>> /etc/bind/named.conf.local
         zone "$domain" {
              type master;
              file "/etc/bind/db.$domain";
-
+	};
 	zone "$ip2.$ip1.in-addr.arpa" {
-        type master;
-        notify no;
-        file "/etc/bind/rev.db.$domain";
-};
+        	type master;
+        	notify no;
+        	file "/etc/bind/rev.db.$domain";
+	};
 EOT
 
 cat <<EOT>> /etc/bind/db.$domain
