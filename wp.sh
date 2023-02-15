@@ -9,7 +9,15 @@ sleep 5;clear
 read -p 'Domain: example: wp.smk.net' domain
 read -p 'Ip address, example: 192.168.1.69  : ' ip
 IFS=. read ip1 ip2 ip3 ip4 <<< "$ip"
-echo "$ip" >> /etc/resolv.conf;systemctl restart networking
+
+cat <<EOT>> /etc/resolv.conf
+
+nameserver $domain
+search $ip
+search 8.8.8.8
+EOT
+
+systemctl restart networking
 
 mysql -u root --execute "CREATE DATABASE wordpress;
 CREATE USER 'wp_user'@'localhost' IDENTIFIED BY '12345';
