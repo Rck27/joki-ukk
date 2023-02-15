@@ -12,7 +12,7 @@ IFS=. read ip1 ip2 ip3 ip4 <<< "$ip"
 echo "$ip" >> /etc/resolv.conf;systemctl restart networking
 
 mysql -u root --execute "CREATE DATABASE wordpress;
-CREATE USER 'wp_user'@'localhost' IDENTIFIED BY 'Passw0rd';
+CREATE USER 'wp_user'@'localhost' IDENTIFIED BY '12345';
 GRANT ALL ON wordpress.* TO 'wp_user'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EXIT";
@@ -89,4 +89,37 @@ $ip4.$ip3      IN      PTR     $domain.
 
 EOT
 
+cat <<EOT>> /var/www/html/wordpress/wp-config.php
+<?php
+define( 'DB_NAME', 'wordpress' );
 
+/** Database username */
+define( 'DB_USER', 'wp_user' );
+
+/** Database password */
+define( 'DB_PASSWORD', '12345' );
+
+/** Database hostname */
+define( 'DB_HOST', 'localhost' );
+
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8' );
+
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
+define( 'AUTH_KEY',         'put your unique phrase here' );
+define( 'SECURE_AUTH_KEY',  'put your unique phrase here' );
+define( 'LOGGED_IN_KEY',    'put your unique phrase here' );
+define( 'NONCE_KEY',        'put your unique phrase here' );
+define( 'AUTH_SALT',        'put your unique phrase here' );
+define( 'SECURE_AUTH_SALT', 'put your unique phrase here' );
+define( 'LOGGED_IN_SALT',   'put your unique phrase here' );
+define( 'NONCE_SALT',       'put your unique phrase here' );
+$table_prefix = 'wp_';
+
+define( 'WP_DEBUG', false );
+if ( ! defined( 'ABSPATH' ) ) {
+        define( 'ABSPATH', __DIR__ . '/' );
+}
+require_once ABSPATH . 'wp-settings.php';
+EOT
