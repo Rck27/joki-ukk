@@ -4,10 +4,14 @@
 read -p "your mikrotik local ip address,(ex: 10.10.x.1): " localip
 read -p "your proxmox ip address,(ex: 10.12.x.2): " pxmip
 read -p "your mikrotik on vlan ip address,(ex: 10.12.x.1): " mkip
-read -p "your name, (ex: kiki): " name
+read -p "your name, (ex: agos): " name
 read -p "dns name, (ex: smkhooh.net): " fqdn
-apt install php-fpm mariadb-server apache2 bind9 wget unzip -y
 
+
+
+
+
+apt install php-fpm mariadb-server apache2 bind9 wget unzip php-mysql libapache2-mod-php -y
 IFS=. read ip1 ip2 ip3 ip4 <<< "$pxmip"
 
 mysql -u root --execute "CREATE DATABASE wordpress;
@@ -49,6 +53,8 @@ read -p "change apache2 document root to wordpress? Y/N: " ganti
 if [[ $ganti == "Y" ]]; then
 cd /etc/apache2/sites-available
 sed "s,/html,/html/wordpress," 000-default.conf -i
+a2dissite 000-default.conf
+a2ensite 000-default.conf
 fi
 
 
