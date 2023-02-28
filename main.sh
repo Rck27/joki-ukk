@@ -48,7 +48,8 @@ EOT
 
 echo -e "@ IN A $pxmip" >> fwd.$name
 echo -e "$ip4 IN PTR $fqdn." >> rev.$name
-
+sed "s,localhost,$fqdn,g" fwd.$name -i
+sed "s,localhost,$fqdn,g" rev.$name -i
 echo -e "nameserver $pxmip \n search $fqdn \n nameserver 8.8.8.8" > /etc/resolv.conf
 
 read -p "change apache2 document root to wordpress? Y/N: " ganti
