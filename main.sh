@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -i
 
 
 read -p "your mikrotik local ip address,(ex: 10.10.x.1): " localip
@@ -10,8 +10,10 @@ read -p "dns name, (ex: smkhooh.net): " fqdn
 
 
 
-
+apt-get update --allow-releaseinfo-change
+apt update
 apt install php-fpm mariadb-server apache2 bind9 wget unzip php-mysql libapache2-mod-php -y
+a2enmod proxy_fcgi setenvif
 IFS=. read ip1 ip2 ip3 ip4 <<< "$pxmip"
 
 mysql -u root --execute "CREATE DATABASE wordpress;
@@ -47,7 +49,7 @@ EOT
 echo -e "@ IN A $pxmip" >> fwd.$name
 echo -e "$ip4 IN PTR $fqdn." >> rev.$name
 
-echo -e "nameserver $pxmip \n search $fqdn" \n nameserver 8.8.8.8" > /etc/resolv.conf
+echo -e "nameserver $pxmip \n search $fqdn \n nameserver 8.8.8.8" > /etc/resolv.conf
 
 read -p "change apache2 document root to wordpress? Y/N: " ganti
 if [[ $ganti == "Y" ]]; then
