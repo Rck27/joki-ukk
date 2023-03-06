@@ -1,0 +1,65 @@
+apt-get update --allow-releaseinfo-change
+apt update
+apt install php-fpm mariadb-server apache2 wget unzip php-mysql libapache2-mod-php -y
+a2enmod proxy_fcgi setenvif
+
+
+wget https://wordpress.org/latest.zip
+//ganti wp_user dan wp_db
+nano wordpress/wp-config.php
+
+
+Pembahasan UKK TKJ
+
+
+Setting mikrotik
+
+
+karena menggunakan VLAN
+
+1.
+pertama tambahkan interface VLAN
+
+interface > vlan > : ganti vlan-id sesuai soal
+		     ganti interface dengan ether1 atau sesuai soal
+		     
+
+kemudian tambahkan alamat IP ke interface VLAN yang sudah dibuat tadi
+IP > address > + > : masukkan address sesuai soal, contoh 10.10.1.1/30
+		     interface ganti dengan vlan
+		     
+keterangan: jika ip dalam proxmox ditetapkan, misal 10.10.1.2/30 maka saat menambahkan ip diatas, masukkan ip 10.10.1.1/30
+-tes: ping ke ip proxmox kalian, harusnya sudah bisa, jika belum, periksa ip address, atau interface vlan tadi, pastikan interface sudah masuk ke ether1
+dan vlan-id nya sudah sesuai, kurang lebih sesuai gambar dibawah:
+
+2. tambahkan ip firewall nat
+IP > firewall > NAT > + > : pilih chain=srcnat
+			  action=masquarade
+			  out-interface=vlan1
+			  			  
+-tes: lakukan ping ke 8.8.8.8
+3. Tambahkan DNS static
+untuk menghemat waktu, kita tidak menggunakan bind9 sebagai dns server
+
+ip > dns > : pada kolom servers, masukkan ip mikrotik kalian
+	    kemudian klik static > + > name: diisi domain sesuai soal, contoh smkbisa.net
+	    			       addresss: diisi ip proxmox kalian, contoh 10.10.1.2
+
+-Tes: lakukan ping ke domain yang kalian masukkan tadi, contoh, smkbisa.net, jika seperti contoh maka harusnya akan resolve ke 10.10.1.2
+jika tidak, coba masuk ke ip > dns > cache > klik flush, lalu coba tes lagi
+
+4.Tambahkan ip address local network
+ip > address > + > masukkan alamat ip, dan interface sesuai perintah di soal, sesuaikan / pada akhiran sesuai perintah pada soal
+/24 = 254 client , /25 = /26= dsb.
+
+5.Tambahkan hotspot
+wireless > klik pada wlan1, kemudian pilih tanda centang, dobel klik, lalu ganti SSID
+ip > address > + > interface=wlan1 , ip address sesuai perintah dalam soal
+ip > hotspot > hotspot-setup > 
+
+6. tambahkan dhcp-server
+ip > dhcp-server > setup > pilih interface yang baru kalian tambahkan pada step sebelumnya, sesuaikan address-to-give-out, misal pada soal di haruskan memberi
+100 client, maka pilih ip, misal 192.168.1.2-192.168.1.101   sesuaikan dengan soal
+
+
+
